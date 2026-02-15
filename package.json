@@ -4,7 +4,7 @@
   "description": "This is a Publii plugin to enable embedding Open Street Maps in a Publii page or post",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "webpack"
   },
   "repository": {
     "type": "git",
@@ -24,6 +24,17 @@
   },
   "homepage": "https://github.com/Shko-Online/Publii_OSM_Plugin#readme",
   "devDependencies": {
-    "typescript": "^5.9.3"
-  }
+    "@types/leaflet": "^1.9.21",
+    "@types/node": "^25.2.3",
+    "copy-webpack-plugin": "^13.0.1",
+    "filemanager-webpack-plugin": "^9.0.1",
+    "ts-loader": "^9.5.4",
+    "typescript": "^5.9.3",
+    "webpack": "^5.105.2",
+    "webpack-cli": "^6.0.1"
+  },
+  "dependencies": {
+    "leaflet": "^1.9.4"
+  },
+  "type": "commonjs"
 }
