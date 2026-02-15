@@ -73,6 +73,12 @@ module.exports = [
             info: { minimized: true },
             context: "node_modules",
           },
+           {
+            from: "leaflet/dist/images/*",
+            to: "front-assets/images/[name][ext]",
+            info: { minimized: true },
+            context: "node_modules",
+          },
           {
             from: "leaflet/dist/leaflet.js",
             to: "front-assets",

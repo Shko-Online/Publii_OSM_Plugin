@@ -15,7 +15,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import L from "leaflet";
+import L, { marker } from "leaflet";
 
 const elements = document.getElementsByClassName("shko-online-osm");
 for (const element of elements) {
@@ -27,6 +27,14 @@ for (const element of elements) {
   L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
     maxZoom: 19,
     attribution:
-      '&copy; <a href="https://shko.online">Shko Online</a> | &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      '&copy;&nbsp;<a href="https://shko.online">Shko Online</a> | &copy;&nbsp;<a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>&nbsp;contributors',
   }).addTo(map);
+
+  const markerElements = element.getElementsByClassName("shko-online-osm-marker");
+  for (const markerElement of markerElements) {    
+    const markerLat = parseFloat(markerElement.getAttribute("data-lat") ?? "41.34151");
+    const markerLng = parseFloat(markerElement.getAttribute("data-lng") ?? "19.77706");
+    const marker = L.marker([markerLat, markerLng]).addTo(map);
+    marker.bindPopup(markerElement.innerHTML);
+  }
 }

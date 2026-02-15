@@ -3,7 +3,7 @@
     "description": "This is a Publii plugin to enable embedding Open Street Maps in a page or post",
     "license": "GPL-3.0",
     "author": "Shko Online",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "scope": "site",
     "minimumPubliiVersion": "0.46.2",
     "assets": {
@@ -12,7 +12,12 @@
             "shko-online.osm.builder.js.map",
             "leaflet.js",
             "leaflet.js.map",
-            "leaflet.css"
+            "leaflet.css",
+            "images/layers-2x.png",
+            "images/layers.png",
+            "images/marker-icon-2x.png",
+            "images/marker-icon.png",
+            "images/marker-shadow.png"
         ]
     },
     "config": [
