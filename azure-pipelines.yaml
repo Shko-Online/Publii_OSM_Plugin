@@ -5,38 +5,71 @@ name: 1.0.$(Date:yy)$(Rev:rrr) - Shko Online's OSM Plugin
 pool:
   name: Shko Online
 
-steps:
-- task: NodeTool@0
-  inputs:
-      versionSpec: '22.x'
-  displayName: 'Install Node.js'
+stages:
+- stage: Build
+  displayName: Build Stage
+  jobs:
+  - job: Build
+    displayName: Build Job
+    steps:
+    - task: NodeTool@0
+      inputs:
+          versionSpec: '22.x'
+      displayName: 'Install Node.js'
 
-- powershell: |
-    $BuildNumber = ($env:BuildNumber).Substring(0,($env:BuildNumber).IndexOf(' '));
-    $package = Get-Content package.json | ConvertFrom-Json;
-    $package.version = $BuildNumber;
-    $package | ConvertTo-Json | Set-Content package.json;
-    echo "##vso[task.setvariable variable=BuildNumber;isOutput=true]$BuildNumber"
-  name: MyVars
-  env:
-    BuildNumber: $(Build.BuildNumber)
-  displayName: 'Set Version Variable'
+    - powershell: |
+        $BuildNumber = ($env:BuildNumber).Substring(0,($env:BuildNumber).IndexOf(' '));
+        $package = Get-Content package.json | ConvertFrom-Json;
+        $package.version = $BuildNumber;
+        $package | ConvertTo-Json | Set-Content package.json;
+        echo "##vso[task.setvariable variable=PackageVersion;isOutput=true]$BuildNumber"
+      name: MyVars
+      env:
+        BuildNumber: $(Build.BuildNumber)
+      displayName: 'Set Version Variable'
 
-- task: Npm@1
-  inputs:
-    command: 'install'
-    workingDir: '$(System.DefaultWorkingDirectory)'
-  displayName: 'Install NPM Dependencies Web'
+    - task: Npm@1
+      inputs:
+        command: 'install'
+        workingDir: '$(System.DefaultWorkingDirectory)'
+      displayName: 'Install NPM Dependencies Web'
 
-- task: Npm@1
-  inputs:
-    command: 'custom'
-    customCommand: 'run-script build'
-    workingDir: '$(System.DefaultWorkingDirectory)'
-  displayName: 'Build Publii Plugin'
+    - task: Npm@1
+      inputs:
+        command: 'custom'
+        customCommand: 'run-script build'
+        workingDir: '$(System.DefaultWorkingDirectory)'
+      displayName: 'Build Publii Plugin'
 
-- task: PublishPipelineArtifact@1
-  inputs:
-    targetPath: '$(System.DefaultWorkingDirectory)/dist'
-    artifact: 'PubliiPlugin'
-    publishLocation: 'pipeline'
+    - task: PublishPipelineArtifact@1
+      inputs:
+        targetPath: '$(System.DefaultWorkingDirectory)/dist/shkoOnlineOSM_$(MyVars.PackageVersion).zip'
+        artifact: 'PubliiPlugin'
+        publishLocation: 'pipeline'
+      displayName: 'Publish Artifact'
+- stage: Publish_GitHub
+  displayName: Publish GitHub
+  dependsOn: Build
+  variables: 
+    PackageVersion: $[ stageDependencies.Build.Build.outputs['MyVars.PackageVersion']]
+  jobs:
+    - deployment: Publish_GitHub
+      displayName: Publish to GitHub
+      environment: Production
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            - task: GitHubRelease@1
+              displayName: 'GitHub release (create)'
+              inputs:
+                gitHubConnection: 'Shko-Online'
+                repositoryName: '$(Build.Repository.Name)'
+                action: 'create'
+                target: '$(Build.SourceVersion)'
+                tagSource: 'userSpecifiedTag'
+                tag: 'v-$(PackageVersion)'
+                title: 'v-$(PackageVersion)'
+                assets: '$(Pipeline.Workspace)\PubliiPlugin\shkoOnlineOSM_$(PackageVersion).zip'
+                isDraft: true
+                addChangeLog: false
