@@ -15,26 +15,31 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import L, { marker } from "leaflet";
+import L from "leaflet";
 
-const elements = document.getElementsByClassName("shko-online-osm");
+const elements = document.getElementsByClassName("shko-online-osm") as HTMLCollectionOf<HTMLElement>;
+const copyrightElement = document.getElementById("shko-online-osm-copyright");
+let additionalCopyright = "";
+if (copyrightElement) {
+  additionalCopyright = copyrightElement.dataset.copyright ?? "";
+}
 for (const element of elements) {
-  const lat = parseFloat(element.getAttribute("data-lat") ?? "41.34151");
-  const lng = parseFloat(element.getAttribute("data-lng") ?? "19.77706");
-  const zoom = parseFloat(element.getAttribute("data-zoom") ?? "17");
+  const lat = parseFloat(element.dataset.lat ?? "41.34151");
+  const lng = parseFloat(element.dataset.lng ?? "19.77706");
+  const zoom = parseFloat(element.dataset.zoom ?? "17");
 
   const map = L.map(element as HTMLElement).setView([lat, lng], zoom);
   L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    maxZoom: 19,
     attribution:
-      '&copy;&nbsp;<a href="https://shko.online">Shko Online</a> | &copy;&nbsp;<a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>&nbsp;contributors',
+      `${additionalCopyright ? `${additionalCopyright} | ` : ""}&copy;&nbsp;<a href="https://shko.online">Shko Online</a> | &copy;&nbsp;<a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>&nbsp;contributors`,
   }).addTo(map);
 
-  const markerElements = element.getElementsByClassName("shko-online-osm-marker");
+  const markerElements = element.getElementsByClassName("shko-online-osm-marker") as HTMLCollectionOf<HTMLElement>;
   for (const markerElement of markerElements) {    
-    const markerLat = parseFloat(markerElement.getAttribute("data-lat") ?? "41.34151");
-    const markerLng = parseFloat(markerElement.getAttribute("data-lng") ?? "19.77706");
+    const markerLat = parseFloat(markerElement.dataset.lat ?? "41.34151");
+    const markerLng = parseFloat(markerElement.dataset.lng ?? "19.77706");
     const marker = L.marker([markerLat, markerLng]).addTo(map);
     marker.bindPopup(markerElement.innerHTML);
+    markerElement.innerHTML = "";
   }
 }

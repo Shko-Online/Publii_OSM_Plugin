@@ -1,33 +1,40 @@
 {
-    "name": "Shko Online's Open Street Map",
-    "description": "This is a Publii plugin to enable embedding Open Street Maps in a page or post",
-    "license": "GPL-3.0",
-    "author": "Shko Online",
-    "version": "0.1.1",
-    "scope": "site",
-    "minimumPubliiVersion": "0.46.2",
-    "assets": {
-        "front": [
-            "shko-online.osm.builder.js",
-            "shko-online.osm.builder.js.map",
-            "leaflet.js",
-            "leaflet.js.map",
-            "leaflet.css",
-            "images/layers-2x.png",
-            "images/layers.png",
-            "images/marker-icon-2x.png",
-            "images/marker-icon.png",
-            "images/marker-shadow.png"
-        ]
-    },
-    "config": [
-        {
-            "name": "additionalCopyrightText",
-            "label": "Additional Copyright Text",
-            "note": "Set the additional copyright text for the map. This text will be added to the default copyright notice. <br /><br />  Copyright (C) 2026 Shko Online - <a href=\"https://shko.online\">https://shko.online</a><br /><br />  This program is free software: you can redistribute it and/or modify<br />  it under the terms of the GNU General Public License as published by<br />  the Free Software Foundation, either version 3 of the License, or<br />  (at your option) any later version.<br /><br />  This program is distributed in the hope that it will be useful,<br />  but WITHOUT ANY WARRANTY; without even the implied warranty of<br />  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the<br />  GNU General Public License for more details.<br /><br />  You should have received a copy of the GNU General Public License<br />  along with this program.  If not, see <a href=\"http://www.gnu.org/licenses/\">http://www.gnu.org/licenses/</a>.",
-            "group": "Map Configuration",
-            "value": "",
-            "type": "text"
-        }
+  "name": "Shko Online's Open Street Map",
+  "description": "This is a Publii plugin to enable embedding Open Street Maps in a page or post",
+  "license": "GPL-3.0",
+  "author": "Shko Online",
+  "version": "Calculated during build",
+  "scope": "site",
+  "minimumPubliiVersion": "0.46.2",
+  "assets": {
+    "front": [
+      "shko-online.osm.builder_${PLUGIN_VERSION}.js",
+      "shko-online.osm.builder_${PLUGIN_VERSION}.js.map",
+      "leaflet_${LEAFLET_VERSION}.js",
+      "leaflet_${LEAFLET_VERSION}.js.map",
+      "leaflet_${LEAFLET_VERSION}.css",
+      "images/layers-2x.png",
+      "images/layers.png",
+      "images/marker-icon-2x.png",
+      "images/marker-icon.png",
+      "images/marker-shadow.png"
     ]
+  },
+  "config": [
+    {
+      "name": "additionalCopyrightText",
+      "label": "Additional Copyright Text",
+      "note": "Set the additional copyright text for the map. This text will be added to the default copyright notice.",
+      "group": "Map Configuration",
+      "value": "",
+      "type": "text"
+    },
+    {
+      "name": "copyrightSeparator",
+      "type": "separator",
+      "label": "",
+      "group": "Map Configuration",
+      "note": "Copyright (C) 2026 Shko Online - <a href=\"https://shko.online\">https://shko.online</a><br /><br />This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.<br /><br />This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.<br /><br />  You should have received a copy of the GNU General Public License along with this program.  If not, see <a href=\"http://www.gnu.org/licenses/\">http://www.gnu.org/licenses/</a>."
+    }
+  ]
 }

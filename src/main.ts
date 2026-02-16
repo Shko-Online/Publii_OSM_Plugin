@@ -16,12 +16,17 @@
 */
 
 import type Publii = require("./types/Publii");
+import { escape } from "html-escaper";
+
+type PluginConfig = {
+  additionalCopyrightText?: string;
+};
 
 class ShkoOnlineOSMPlugin implements Publii.Plugin {
   API: Publii.API;
   name: string;
-  config: Publii.PluginConfig;
-  constructor(API: Publii.API, name: string, config: Publii.PluginConfig) {
+  config: PluginConfig;
+  constructor(API: Publii.API, name: string, config: PluginConfig) {
     this.API = API;
     this.name = name;
     this.config = config;
@@ -35,7 +40,7 @@ class ShkoOnlineOSMPlugin implements Publii.Plugin {
   addStyles(rendererInstance: Publii.Renderer) {
     let styles = "";
     if (this.shouldLoadOSM(rendererInstance)) {
-      styles += `<link rel="stylesheet" href="${rendererInstance.siteConfig.domain}/media/plugins/shkoOnlineOSM/leaflet.css" />`;
+      styles += `<link rel="stylesheet" href="${rendererInstance.siteConfig.domain}/media/plugins/shkoOnlineOSM/leaflet_${LEAFLET_VERSION}.css" />`;
     }
     return styles;
   }
@@ -43,15 +48,19 @@ class ShkoOnlineOSMPlugin implements Publii.Plugin {
   addScripts(rendererInstance: Publii.Renderer) {
     let scripts = "";
     if (this.shouldLoadOSM(rendererInstance)) {
-      scripts += `<script src="${rendererInstance.siteConfig.domain}/media/plugins/shkoOnlineOSM/leaflet.js"></script>`;
-      scripts += `<script src="${rendererInstance.siteConfig.domain}/media/plugins/shkoOnlineOSM/shko-online.osm.builder.js"></script>`;
+      scripts += `<script src="${rendererInstance.siteConfig.domain}/media/plugins/shkoOnlineOSM/leaflet_${LEAFLET_VERSION}.js"></script>`;
+      scripts += `<script ${
+        this.config.additionalCopyrightText
+          ? `id="shko-online-osm-copyright" data-copyright="${escape(this.config.additionalCopyrightText)}"`
+          : ""
+      } src="${rendererInstance.siteConfig.domain}/media/plugins/shkoOnlineOSM/shko-online.osm.builder_${PLUGIN_VERSION}.js"></script>`;
     }
     return scripts;
   }
 
   shouldLoadOSM(rendererInstance: Publii.Renderer): boolean {
     let context = rendererInstance.globalContext.context;
-
+    console.log(rendererInstance.globalContext);
     if (Array.isArray(context)) {
       // Check if context contains '404' or 'search'
       if (context.includes("404") || context.includes("search")) {
