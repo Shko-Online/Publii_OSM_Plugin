@@ -31,12 +31,45 @@ export type ModifiersType =
   | "menuStructure"
   | "unassignedMenuStructure"
   | "globalContext"
+  | "postTitle"
+  | "postText"
+  | "postExcerpt"
+  | "postItemData"
+  | "pageTitle"
+  | "pageText"
+  | "pageExcerpt"
+  | "pageItemData"
+  | "authorItemData"
+  | "tagItemData"
+  | "featuredImageItemData"
+  | "socialMetaTags"
+  | "jsonLD"
+  | "htmlOutput"
+  | "feedXmlOutput"
+  | "feedJsonOutput"
   | `customHtml.${string}`
   | "contentStructure";
 export interface PluginConfig {
   state: boolean;
   config: unknown;
 }
+
+/**
+ * Interface for the Page data used in the page modifiers.
+ * @see https://github.com/GetPublii/Publii/blob/master/app/back-end/modules/render-html/items/page.js
+ */
+export interface PageData {
+  id: number;
+  title: string;
+  slug: string;
+}
+
+export interface PostData {
+  id: number;
+  title: string;
+  slug: string;
+}
+
 /**
  * Interface for the Renderer, which is responsible for rendering the static site.
  * @see https://github.com/GetPublii/Publii/blob/master/app/back-end/modules/render-html/renderer.js
@@ -48,11 +81,15 @@ export interface Renderer {
     // Other site configuration properties
   };
   globalContext: {
-    context: {
-
+    context: string[];
+    config: {
+      site: {
+        pageAsFrontpage?: number;
+      }
     }
     // Define properties for global context
   };
+  menuContext: string[];
   commonData: {
     tags: /*globalContextGenerator.getAllTags()*/ any[];
     mainTags: /*globalContextGenerator.getAllMainTags()*/ any[];
@@ -78,13 +115,36 @@ export interface Renderer {
 export interface API {
   addInsertion(
     place: InsertionType,
-    callback: (rendererInstance: Renderer, text?: string) => string,
+    callback: (rendererInstance: Renderer) => string,
     priority?: number,
     pluginInstance?: unknown,
   ): void;
   addModifier(
     value: ModifiersType,
-    callback: (rendererInstance: Renderer, text?: string) => string,
+    callback: (
+      rendererInstance: Renderer,
+      text: string
+    ) => string,
+    priority?: number,
+    pluginInstance?: unknown,
+  ): void;
+  addModifier(
+    value: "postText",
+    callback: (
+      rendererInstance: Renderer,
+      text: string,
+      postData: {postData: PostData},
+    ) => string,
+    priority?: number,
+    pluginInstance?: unknown,
+  ): void;
+  addModifier(
+    value: "pageText",
+    callback: (
+      rendererInstance: Renderer,
+      text: string,
+      pageData: {pageData: PageData},
+    ) => string,
     priority?: number,
     pluginInstance?: unknown,
   ): void;
@@ -97,7 +157,7 @@ export interface API {
 }
 
 export interface Plugin {
-   addInsertions?: () => void;
-   addModifiers?: () => void;
-   addEvents?: () => void;
+  addInsertions?: () => void;
+  addModifiers?: () => void;
+  addEvents?: () => void;
 }

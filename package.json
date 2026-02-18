@@ -1,6 +1,6 @@
 {
   "name": "@shko.online/publii_osm_plugin",
-  "version": "0.1.2",
+  "version": "1.0.26004",
   "description": "This is a Publii plugin to enable embedding Open Street Maps in a Publii page or post",
   "main": "index.js",
   "scripts": {
@@ -31,6 +31,7 @@
     "filemanager-webpack-plugin": "^9.0.1",
     "ts-loader": "^9.5.4",
     "typescript": "^5.9.3",
+    "url-loader": "^4.1.1",
     "webpack": "^5.105.2",
     "webpack-cli": "^6.0.1"
   },

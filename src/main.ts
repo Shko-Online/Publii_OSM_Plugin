@@ -26,6 +26,7 @@ class ShkoOnlineOSMPlugin implements Publii.Plugin {
   API: Publii.API;
   name: string;
   config: PluginConfig;
+  shouldLoadOSMCache: Record<string, boolean> = {};
   constructor(API: Publii.API, name: string, config: PluginConfig) {
     this.API = API;
     this.name = name;
@@ -35,6 +36,8 @@ class ShkoOnlineOSMPlugin implements Publii.Plugin {
   addInsertions() {
     this.API.addInsertion("publiiHead", this.addStyles, 1, this);
     this.API.addInsertion("publiiFooter", this.addScripts, 1, this);
+    this.API.addModifier("postText", this.checkPostContainsOSMClass, 1, this);
+    this.API.addModifier("pageText", this.checkPageContainsOSMClass, 1, this);
   }
 
   addStyles(rendererInstance: Publii.Renderer) {
@@ -46,7 +49,7 @@ class ShkoOnlineOSMPlugin implements Publii.Plugin {
   }
 
   addScripts(rendererInstance: Publii.Renderer) {
-    let scripts = "";
+    let scripts = "";   
     if (this.shouldLoadOSM(rendererInstance)) {
       scripts += `<script src="${rendererInstance.siteConfig.domain}/media/plugins/shkoOnlineOSM/leaflet_${LEAFLET_VERSION}.js"></script>`;
       scripts += `<script ${
@@ -58,19 +61,40 @@ class ShkoOnlineOSMPlugin implements Publii.Plugin {
     return scripts;
   }
 
+  checkPostContainsOSMClass(
+    rendererInstance: Publii.Renderer,
+    text: string,
+    postData: { postData: Publii.PostData },
+  ): string {
+    if (text?.includes("shko-online-osm")) {
+      this.shouldLoadOSMCache["post-"+postData.postData.id] = true;
+    }
+    return text;
+  }
+
+  checkPageContainsOSMClass(
+    rendererInstance: Publii.Renderer,
+    text: string,
+    pageData: { pageData: Publii.PageData },
+  ): string {
+    if (text?.includes("shko-online-osm")) {
+      this.shouldLoadOSMCache["page-"+pageData.pageData.id] = true;
+    }
+    return text;
+  }
+
   shouldLoadOSM(rendererInstance: Publii.Renderer): boolean {
     let context = rendererInstance.globalContext.context;
-    console.log(rendererInstance.globalContext);
+
     if (Array.isArray(context)) {
-      // Check if context contains '404' or 'search'
-      if (context.includes("404") || context.includes("search")) {
-        return false;
-      } else {
-        return true;
+      if(context.includes("page") && context.includes("homepage") ) {
+        return this.shouldLoadOSMCache["page-"+(rendererInstance.globalContext.config?.site?.pageAsFrontpage ?? -1)] || false;
+      }else if (context.includes("page")  || context.includes("post")) {
+      return this.shouldLoadOSMCache[rendererInstance.menuContext[rendererInstance.menuContext.length-1]??''] || false;
       }
-    } else {
       return false;
     }
+    return false;
   }
 }
 
